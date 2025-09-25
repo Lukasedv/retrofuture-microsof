@@ -4,6 +4,8 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { UserSettings } from '@/components/UserSettings'
+import { TransferMoney } from '@/components/TransferMoney'
 
 function App() {
   const [isBooted, setIsBooted] = useState(false)
@@ -82,6 +84,8 @@ function MainTerminal({ currentScreen, setCurrentScreen }: {
         {currentScreen === 'about' && <AboutScreen setCurrentScreen={setCurrentScreen} />}
         {currentScreen === 'events' && <EventsScreen setCurrentScreen={setCurrentScreen} />}
         {currentScreen === 'resources' && <ResourcesScreen setCurrentScreen={setCurrentScreen} />}
+        {currentScreen === 'settings' && <UserSettings setCurrentScreen={setCurrentScreen} />}
+        {currentScreen === 'banking' && <TransferMoney setCurrentScreen={setCurrentScreen} />}
       </Card>
     </div>
   )
@@ -147,6 +151,20 @@ function MainScreen({ setCurrentScreen }: { setCurrentScreen: (screen: string) =
           className="terminal-border border-accent text-accent hover:bg-accent hover:text-accent-foreground"
         >
           RESOURCES.DAT
+        </Button>
+        <Button 
+          onClick={() => setCurrentScreen('settings')}
+          variant="outline" 
+          className="terminal-border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+        >
+          USER_SETTINGS.CFG [CSRF VULNERABLE]
+        </Button>
+        <Button 
+          onClick={() => setCurrentScreen('banking')}
+          variant="outline" 
+          className="terminal-border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+        >
+          BANKING.EXE [CSRF VULNERABLE]
         </Button>
       </div>
     </div>
