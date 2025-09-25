@@ -4,6 +4,9 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { VulnerableComments } from '@/components/VulnerableComments'
+import { SearchResults } from '@/components/SearchResults'
+import { UserProfile } from '@/components/UserProfile'
 
 function App() {
   const [isBooted, setIsBooted] = useState(false)
@@ -82,6 +85,9 @@ function MainTerminal({ currentScreen, setCurrentScreen }: {
         {currentScreen === 'about' && <AboutScreen setCurrentScreen={setCurrentScreen} />}
         {currentScreen === 'events' && <EventsScreen setCurrentScreen={setCurrentScreen} />}
         {currentScreen === 'resources' && <ResourcesScreen setCurrentScreen={setCurrentScreen} />}
+        {currentScreen === 'comments' && <VulnerableComments setCurrentScreen={setCurrentScreen} />}
+        {currentScreen === 'search' && <SearchResults setCurrentScreen={setCurrentScreen} />}
+        {currentScreen === 'profile' && <UserProfile setCurrentScreen={setCurrentScreen} />}
       </Card>
     </div>
   )
@@ -148,6 +154,42 @@ function MainScreen({ setCurrentScreen }: { setCurrentScreen: (screen: string) =
         >
           RESOURCES.DAT
         </Button>
+      </div>
+
+      <Separator className="bg-destructive my-8" />
+
+      {/* XSS Demonstration Section */}
+      <div className="space-y-4">
+        <div className="text-destructive font-bold terminal-text">
+          ⚠️ XSS VULNERABILITY DEMONSTRATIONS
+        </div>
+        <div className="text-sm text-muted-foreground">
+          The following components contain intentional XSS vulnerabilities for educational purposes:
+        </div>
+        
+        <div className="flex flex-wrap gap-4">
+          <Button 
+            onClick={() => setCurrentScreen('comments')}
+            variant="outline" 
+            className="terminal-border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+          >
+            COMMENTS.XSS
+          </Button>
+          <Button 
+            onClick={() => setCurrentScreen('search')}
+            variant="outline" 
+            className="terminal-border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+          >
+            SEARCH.XSS
+          </Button>
+          <Button 
+            onClick={() => setCurrentScreen('profile')}
+            variant="outline" 
+            className="terminal-border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+          >
+            PROFILE.XSS
+          </Button>
+        </div>
       </div>
     </div>
   )
