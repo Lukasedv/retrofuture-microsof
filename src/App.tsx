@@ -4,6 +4,9 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import UserProfile from '@/components/UserProfile'
+import DocumentViewer from '@/components/DocumentViewer'
+import TransactionHistory from '@/components/TransactionHistory'
 
 function App() {
   const [isBooted, setIsBooted] = useState(false)
@@ -82,6 +85,9 @@ function MainTerminal({ currentScreen, setCurrentScreen }: {
         {currentScreen === 'about' && <AboutScreen setCurrentScreen={setCurrentScreen} />}
         {currentScreen === 'events' && <EventsScreen setCurrentScreen={setCurrentScreen} />}
         {currentScreen === 'resources' && <ResourcesScreen setCurrentScreen={setCurrentScreen} />}
+        {currentScreen === 'user-profile' && <UserProfile setCurrentScreen={setCurrentScreen} />}
+        {currentScreen === 'documents' && <DocumentViewer setCurrentScreen={setCurrentScreen} />}
+        {currentScreen === 'transactions' && <TransactionHistory setCurrentScreen={setCurrentScreen} />}
       </Card>
     </div>
   )
@@ -148,6 +154,37 @@ function MainScreen({ setCurrentScreen }: { setCurrentScreen: (screen: string) =
         >
           RESOURCES.DAT
         </Button>
+      </div>
+
+      <Separator className="bg-red-500 my-8" />
+      
+      <div className="space-y-4">
+        <div className="text-red-400 font-bold">&gt; VULNERABLE SYSTEMS (CVE-005 DEMONSTRATION)</div>
+        <div className="text-red-300 text-sm">⚠️ WARNING: The following systems contain intentional IDOR vulnerabilities for security testing</div>
+        
+        <div className="flex flex-wrap gap-4">
+          <Button 
+            onClick={() => setCurrentScreen('user-profile')}
+            variant="outline" 
+            className="terminal-border border-red-500 text-red-400 hover:bg-red-500 hover:text-white"
+          >
+            USER_PROFILE.EXE
+          </Button>
+          <Button 
+            onClick={() => setCurrentScreen('documents')}
+            variant="outline" 
+            className="terminal-border border-red-500 text-red-400 hover:bg-red-500 hover:text-white"
+          >
+            DOCUMENT_VIEWER.EXE
+          </Button>
+          <Button 
+            onClick={() => setCurrentScreen('transactions')}
+            variant="outline" 
+            className="terminal-border border-red-500 text-red-400 hover:bg-red-500 hover:text-white"
+          >
+            TRANSACTION_HISTORY.EXE
+          </Button>
+        </div>
       </div>
     </div>
   )
