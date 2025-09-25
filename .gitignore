@@ -32,3 +32,7 @@ pids
 .devcontainer/
 
 .spark-workbench-id
+
+# Database files (intentionally vulnerable database for testing)
+database.sqlite
+*.db
