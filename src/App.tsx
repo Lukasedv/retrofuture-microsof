@@ -4,6 +4,8 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { EmployeeSearch } from '@/components/EmployeeSearch'
+import { VulnerableLogin } from '@/components/VulnerableLogin'
 
 function App() {
   const [isBooted, setIsBooted] = useState(false)
@@ -82,6 +84,9 @@ function MainTerminal({ currentScreen, setCurrentScreen }: {
         {currentScreen === 'about' && <AboutScreen setCurrentScreen={setCurrentScreen} />}
         {currentScreen === 'events' && <EventsScreen setCurrentScreen={setCurrentScreen} />}
         {currentScreen === 'resources' && <ResourcesScreen setCurrentScreen={setCurrentScreen} />}
+        {currentScreen === 'security' && <SecurityScreen setCurrentScreen={setCurrentScreen} />}
+        {currentScreen === 'employee-search' && <EmployeeSearch setCurrentScreen={setCurrentScreen} />}
+        {currentScreen === 'vulnerable-login' && <VulnerableLogin setCurrentScreen={setCurrentScreen} />}
       </Card>
     </div>
   )
@@ -147,6 +152,13 @@ function MainScreen({ setCurrentScreen }: { setCurrentScreen: (screen: string) =
           className="terminal-border border-accent text-accent hover:bg-accent hover:text-accent-foreground"
         >
           RESOURCES.DAT
+        </Button>
+        <Button 
+          onClick={() => setCurrentScreen('security')}
+          variant="outline" 
+          className="terminal-border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+        >
+          SECURITY_TEST.EXE
         </Button>
       </div>
     </div>
@@ -312,6 +324,85 @@ function ResourcesScreen({ setCurrentScreen }: { setCurrentScreen: (screen: stri
           <div className="text-accent font-bold">CONTRIBUTE.EXE</div>
           <div>Have a useful resource to share? Contact us to add it to our database!</div>
           <div>We're always looking for community-contributed content and tools.</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SecurityScreen({ setCurrentScreen }: { setCurrentScreen: (screen: string) => void }) {
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold terminal-glow text-destructive">SECURITY_TEST.EXE</h1>
+        <Button 
+          onClick={() => setCurrentScreen('main')}
+          variant="ghost" 
+          className="text-muted-foreground hover:text-primary"
+        >
+          [ BACK ] &lt;&lt;
+        </Button>
+      </div>
+
+      <div className="space-y-6 terminal-text">
+        <div className="text-destructive font-bold">&gt; VULNERABILITY TESTING SUITE</div>
+        <div className="p-4 border border-destructive bg-destructive/10">
+          <div className="text-destructive font-bold mb-2">⚠️ WARNING ⚠️</div>
+          <div className="text-sm">
+            This section contains intentionally vulnerable code for security testing and educational purposes only. 
+            These vulnerabilities are designed to be detected by GitHub Advanced Security and similar tools.
+          </div>
+        </div>
+
+        <div className="grid gap-4">
+          <div className="border border-primary p-4">
+            <div className="text-primary font-bold mb-2">SQL Injection Testing</div>
+            <div className="text-sm mb-4">Test SQL injection vulnerabilities in database queries</div>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => setCurrentScreen('employee-search')}
+                variant="outline"
+                className="terminal-border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+              >
+                EMPLOYEE SEARCH
+              </Button>
+              <Button 
+                onClick={() => setCurrentScreen('vulnerable-login')}
+                variant="outline"
+                className="terminal-border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+              >
+                LOGIN SYSTEM
+              </Button>
+            </div>
+          </div>
+
+          <div className="border border-primary p-4">
+            <div className="text-primary font-bold mb-2">CVE Information</div>
+            <div className="text-sm space-y-1">
+              <div>• <span className="text-accent">CWE-89:</span> SQL Injection</div>
+              <div>• <span className="text-accent">Impact:</span> Data exposure, authentication bypass</div>
+              <div>• <span className="text-accent">Detection:</span> Static analysis tools</div>
+            </div>
+          </div>
+
+          <div className="border border-primary p-4">
+            <div className="text-primary font-bold mb-2">Testing Scenarios</div>
+            <div className="text-sm space-y-1">
+              <div>1. Basic string injection attacks</div>
+              <div>2. Union-based SQL injection</div>
+              <div>3. Authentication bypass techniques</div>
+              <div>4. Blind SQL injection patterns</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 p-4 border border-accent bg-accent/10">
+          <div className="text-accent font-bold">SECURITY NOTICE</div>
+          <div className="text-sm">
+            These vulnerabilities are implemented for educational and testing purposes. 
+            In production environments, always use parameterized queries, input validation, 
+            and proper authentication mechanisms.
+          </div>
         </div>
       </div>
     </div>
