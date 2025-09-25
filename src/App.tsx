@@ -4,11 +4,15 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { WeakLogin } from '@/components/WeakLogin'
+import { AdminPanel } from '@/components/AdminPanel'
 
 function App() {
   const [isBooted, setIsBooted] = useState(false)
   const [currentScreen, setCurrentScreen] = useKV('msug-current-screen', 'main')
   const [bootStep, setBootStep] = useState(0)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [userData, setUserData] = useState<any>(null)
 
   const bootMessages = [
     'SYSTEM INITIALIZING...',
@@ -61,24 +65,84 @@ function App() {
     )
   }
 
-  return <MainTerminal currentScreen={currentScreen} setCurrentScreen={setCurrentScreen} />
+  const handleLoginSuccess = (loginData: any) => {
+    console.log("Login successful:", loginData);
+    setUserData(loginData);
+    setIsAuthenticated(true);
+    setCurrentScreen('main');
+  };
+
+  const handleLogout = () => {
+    setUserData(null);
+    setIsAuthenticated(false);
+    setCurrentScreen('login');
+  };
+
+  const handleShowAdmin = () => {
+    setCurrentScreen('admin');
+  };
+
+  return <MainTerminal 
+    currentScreen={currentScreen} 
+    setCurrentScreen={setCurrentScreen}
+    isAuthenticated={isAuthenticated}
+    userData={userData}
+    onLoginSuccess={handleLoginSuccess}
+    onLogout={handleLogout}
+    onShowAdmin={handleShowAdmin}
+  />
 }
 
-function MainTerminal({ currentScreen, setCurrentScreen }: { 
-  currentScreen: string | undefined, 
-  setCurrentScreen: (screen: string) => void 
+function MainTerminal({ 
+  currentScreen, 
+  setCurrentScreen,
+  isAuthenticated,
+  userData,
+  onLoginSuccess,
+  onLogout,
+  onShowAdmin
+}: { 
+  currentScreen: string | undefined;
+  setCurrentScreen: (screen: string) => void;
+  isAuthenticated: boolean;
+  userData: any;
+  onLoginSuccess: (data: any) => void;
+  onLogout: () => void;
+  onShowAdmin: () => void;
 }) {
   return (
     <div className="min-h-screen bg-background p-4 scanlines">
       <Card className="terminal-border bg-card min-h-[600px] p-6">
         <div className="mb-4 flex justify-between items-center text-sm">
           <span className="terminal-glow">MSUG FINLAND SECURE TERMINAL - SCREEN 1/4</span>
-          <Badge variant="outline" className="terminal-glow bg-accent text-accent-foreground border-accent">
-            SECURE CONNECTION ACTIVE
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="terminal-glow bg-accent text-accent-foreground border-accent">
+              SECURE CONNECTION ACTIVE
+            </Badge>
+            {isAuthenticated && (
+              <Badge variant="outline" className="terminal-glow bg-green-500 text-green-100 border-green-500">
+                USER: {userData?.user?.username?.toUpperCase() || 'UNKNOWN'}
+              </Badge>
+            )}
+          </div>
         </div>
 
-        {(currentScreen === 'main' || !currentScreen) && <MainScreen setCurrentScreen={setCurrentScreen} />}
+        {/* Authentication and screen routing */}
+        {currentScreen === 'login' && (
+          <WeakLogin onLoginSuccess={onLoginSuccess} onShowAdmin={onShowAdmin} />
+        )}
+        {currentScreen === 'admin' && (
+          <AdminPanel userData={userData} onBack={() => setCurrentScreen('main')} />
+        )}
+        {(currentScreen === 'main' || !currentScreen) && (
+          <MainScreen 
+            setCurrentScreen={setCurrentScreen} 
+            isAuthenticated={isAuthenticated}
+            userData={userData}
+            onLogout={onLogout}
+            onShowLogin={() => setCurrentScreen('login')}
+          />
+        )}
         {currentScreen === 'about' && <AboutScreen setCurrentScreen={setCurrentScreen} />}
         {currentScreen === 'events' && <EventsScreen setCurrentScreen={setCurrentScreen} />}
         {currentScreen === 'resources' && <ResourcesScreen setCurrentScreen={setCurrentScreen} />}
@@ -87,7 +151,19 @@ function MainTerminal({ currentScreen, setCurrentScreen }: {
   )
 }
 
-function MainScreen({ setCurrentScreen }: { setCurrentScreen: (screen: string) => void }) {
+function MainScreen({ 
+  setCurrentScreen,
+  isAuthenticated,
+  userData,
+  onLogout,
+  onShowLogin
+}: { 
+  setCurrentScreen: (screen: string) => void;
+  isAuthenticated: boolean;
+  userData: any;
+  onLogout: () => void;
+  onShowLogin: () => void;
+}) {
   return (
     <div className="space-y-8">
       <div className="text-center my-12">
@@ -117,18 +193,57 @@ function MainScreen({ setCurrentScreen }: { setCurrentScreen: (screen: string) =
         </div>
 
         <div className="space-y-2">
-          <div className="text-accent font-bold">ACCESS LEVEL: AUTHORIZED</div>
-          <div className="text-primary">SECURITY CLEARANCE: VERIFIED</div>
+          <div className="text-accent font-bold">ACCESS LEVEL: {isAuthenticated ? 'AUTHORIZED' : 'GUEST'}</div>
+          <div className="text-primary">SECURITY CLEARANCE: {isAuthenticated ? 'VERIFIED' : 'PENDING'}</div>
+          {isAuthenticated && userData?.user && (
+            <div className="text-green-400">
+              LOGGED IN AS: {userData.user.username} ({userData.user.role})
+            </div>
+          )}
         </div>
       </div>
 
       <div className="mt-12">
-        <Button 
-          onClick={() => setCurrentScreen('about')}
-          className="terminal-border bg-transparent border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-2"
-        >
-          [ WHAT IS MSUG? ] &gt;&gt;
-        </Button>
+        {!isAuthenticated ? (
+          <div className="space-y-4">
+            <Button 
+              onClick={onShowLogin}
+              className="terminal-border bg-transparent border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-2"
+            >
+              [ LOGIN ] &gt;&gt;
+            </Button>
+            <div className="text-sm text-muted-foreground">
+              Guest access: Limited functionality available
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <Button 
+              onClick={() => setCurrentScreen('about')}
+              className="terminal-border bg-transparent border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-2"
+            >
+              [ WHAT IS MSUG? ] &gt;&gt;
+            </Button>
+            <div className="flex gap-4">
+              <Button 
+                onClick={onLogout}
+                variant="outline"
+                className="terminal-border border-red-500 text-red-400 hover:bg-red-500 hover:text-white"
+              >
+                LOGOUT
+              </Button>
+              {(userData?.user?.role === 'administrator' || userData?.user?.isAdmin) && (
+                <Button 
+                  onClick={() => setCurrentScreen('admin')}
+                  variant="outline"
+                  className="terminal-border border-red-500 text-red-400 hover:bg-red-500 hover:text-white"
+                >
+                  ADMIN PANEL
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       <Separator className="bg-primary my-8" />
@@ -138,15 +253,17 @@ function MainScreen({ setCurrentScreen }: { setCurrentScreen: (screen: string) =
           onClick={() => setCurrentScreen('events')}
           variant="outline" 
           className="terminal-border border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+          disabled={!isAuthenticated}
         >
-          EVENTS.EXE
+          EVENTS.EXE {!isAuthenticated && '(LOGIN REQUIRED)'}
         </Button>
         <Button 
           onClick={() => setCurrentScreen('resources')}
           variant="outline" 
           className="terminal-border border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+          disabled={!isAuthenticated}
         >
-          RESOURCES.DAT
+          RESOURCES.DAT {!isAuthenticated && '(LOGIN REQUIRED)'}
         </Button>
       </div>
     </div>
